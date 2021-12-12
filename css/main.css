@@ -1,0 +1,116 @@
+body {
+    background-image: linear-gradient(0deg, #00ffe7 0%, #3a7bd5 80%);
+    min-height: 100vh;
+    padding-top: 3em;
+}
+header {
+    font-size: 2em;
+    color: white;
+    text-align: center;
+}
+
+/* Main content of the todo app */
+.todo-app {
+    width: 80%;
+    margin: 3em auto;
+    border: .3em solid #DDD;
+    background: #FFF;
+}
+
+/* Input and Add button */
+.todo-add {
+    position: relative;
+    line-height: 4em;
+    vertical-align: middle;
+}
+.todo-add>input {
+    width: 98%;
+    height: 3em;
+    border: 1px solid #7fffd4;
+    outline: none;
+}
+.todo-add>input:focus {
+    border-width: 2px;
+}
+.todo-add>.add-btn {
+    position: absolute;
+    top: 0; right: 0;
+    width: 4em;
+    height: 4em;
+    font-size: 1em;
+    background: #7fffd4;
+    border-radius: 100%;
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+.todo-add>.add-btn:focus, .todo-add>.add-btn:hover {
+    box-shadow: 2px 2px 5px 4px #7FDDC4;
+}
+
+/* Todo items */
+.todo-items {
+    margin-top: 1em;
+}
+.todo-items li {
+    width: 100%;
+    line-height: 3em;
+    padding-left: 1em;
+    box-sizing: border-box;
+    background: #666;
+    color: #DDD;
+}
+.todo-items li:nth-child(2n) {
+    background: #777;
+}
+.todo-items li:hover {
+    font-weight: bold;
+    color: #FFF;
+    background: #888;
+    /* cursor: pointer; */
+}
+.action-icon {
+    float: right;
+    width: 2em;
+    height: 100%;
+    text-align: center;
+    box-sizing: border-box;
+    color: #FF7E7E;
+}
+.action-icon:hover {
+    cursor: pointer;
+}
+
+/* stretch icon to containing div */
+.action-icon i {
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: .7;
+}
+.action-icon i::before {
+    vertical-align: middle;
+    line-height: 3em;
+    opacity: .7;
+}
+
+.action-icon:hover i::before {
+    opacity: 1;
+    font-weight: bold;
+}
+
+.todos-total {
+    line-height: 3em;
+}
+
+.completed {
+    text-decoration: line-through;
+}
+
+.feedback {
+    display: none;
+}
+
+.showItem {
+    display: block;
+}
