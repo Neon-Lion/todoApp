@@ -96,10 +96,12 @@ const removeTodo = function(id) {
 	let index = todos.findIndex(todo => todo.id === id);
 
 	// Remove from todos array the element with index index
-	if(index >= 0) {
-		todos.splice(index, 1);
-		setTimeOutForAlerts("To do item was deleted successfully.", "success", 3000);
-	}
+	todos.filter( (todo, index) => {
+		if(index >= 0) {
+			todos.splice(index, 1);
+			setTimeOutForAlerts("To do item was deleted successfully.", "success", 3000);
+		}
+	});
 
 	// Render todos
 	renderTodos();
