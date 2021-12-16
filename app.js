@@ -96,7 +96,7 @@ const addTodo = function() {
 
 	// Add todo when todos array is empty
 	if(todos == "" && newTodo.title != '') {
-		// Fetch the POST Request object
+		// Send the POST Request object
 		fetch(postTodos)
 		.then(response => {
 			if(!response.ok) {
@@ -109,6 +109,11 @@ const addTodo = function() {
 			// Change local state
 			todos = [...todos, data];
 
+			setTimeOutForAlerts("To do item was added successfully.", "success", 3000);
+
+			// Render todos
+			renderTodos(todos);
+		
 			clearInput();
 		})
 		.catch(err => console.error(err));
@@ -134,6 +139,11 @@ const addTodo = function() {
 				.then(data => {
 					// Change local state
 					todos = [...todos, data];
+					
+					setTimeOutForAlerts("To do item was added successfully.", "success", 3000);
+			
+					// Render todos
+					renderTodos(todos);
 
 					clearInput();
 				})
@@ -160,7 +170,7 @@ const removeTodo = function(id) {
 		}
 	});
 
-	// Fetch the DELETE Request object
+	// Send the DELETE Request object
 	fetch(deleteTodos)
 	.then( response => {
 		if(!response.ok) {
@@ -169,6 +179,11 @@ const removeTodo = function(id) {
 
 		// Remove from todos array the element with selected id using filter()
 		todos = todos.filter(todo => todo.id != id);
+
+		setTimeOutForAlerts("To do item was deleted successfully.", "success", 3000);
+		
+		// Render todos
+		renderTodos(todos);
 	})
 	.catch(err => console.error(err));
 };
@@ -196,12 +211,15 @@ const editTodo = function (id) {
 			})
 		});
 
-		// Fetch the PUT Request object
+		// Send the PUT Request object
 		fetch(editTodo)
 		.then(response => {
 			if(!response.ok) {
 				throw Error(response.statusText);
 			}
+
+			// Render todos
+			renderTodos(todos);
 		})
 		.catch(err => console.error(err));
 	}
@@ -226,12 +244,15 @@ const toggleComplete = function(id) {
 		})
 	});
 
-	// Fetch the PATCH Request object
+	// Send the PATCH Request object
 	fetch(completeTodo)
 	.then(response => {
 		if(!response.ok) {
 			throw Error(response.statusText);
 		}
+
+		// Render todos
+		renderTodos(todos);
 	})
 	.catch(err => console.error(err));
 };
