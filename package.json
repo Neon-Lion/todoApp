@@ -2,5 +2,22 @@
   "devDependencies": {
     "json-server": "^0.17.0",
     "live-server": "^1.2.1"
-  }
+  },
+  "name": "package",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Neon-Lion/todoApp.git"
+  },
+  "author": "Ivo Adzhemov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Neon-Lion/todoApp/issues"
+  },
+  "homepage": "https://github.com/Neon-Lion/todoApp#readme",
+  "description": "Todo App using Fetch API"
 }
