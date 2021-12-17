@@ -9,10 +9,9 @@ const nodes = {
 	"feedback": 	   document.querySelector('.feedback')
 };
 
-const APIRoot = "http://localhost:3000/todos";
-
-// Create todos array of todo objects from localStorage data
-let todos = [];
+const storage = {
+	"localStorage": window.localStorage
+}
 
 // setTimeOut for alerts
 function setTimeOutForAlerts(alertMessage, alertType, seconds) {
@@ -24,16 +23,54 @@ function setTimeOutForAlerts(alertMessage, alertType, seconds) {
         }, seconds);
 }
 
+function equalsIgnoringCase(text, other) {
+    return text.localeCompare(other, undefined, { sensitivity: "base" }) === 0;
+}
+
+// Save todo tasks in localStorage
+function saveLocalTodo(todo) {
+    let todos;
+
+	todos = (storage.localStorage.getItem("todos") === null) ? [] :
+		JSON.parse(storage.localStorage.getItem("todos"));
+
+	todos = [...todos, todo];
+    storage.localStorage.setItem("todos", JSON.stringify(todos));
+}
+
+// Remove todo task
+function removeLocalTodo(todoIndex) {
+    let todos;
+
+    todos = (storage.localStorage.getItem("todos") === null) ? [] :
+		JSON.parse(storage.localStorage.getItem("todos"));
+    
+    todos.splice(todoIndex, 1);
+    storage.localStorage.setItem("todos", JSON.stringify(todos));
+}
+
 // Display the number of todo items
 const displayTodoItemsCount = function() {
+	let todos;
+	
+	// Get all items from the localStorage
+	todos = (storage.localStorage.getItem("todos") === null) ? [] :
+		JSON.parse(storage.localStorage.getItem("todos"));
+
 	let count = todos.length || 0;
 	nodes.totalItemsCount.innerText = count;
 };
 
 // Render todos
-const renderTodos = function(todos) {
+const renderTodos = function(e) {
 	// Clean current todos:
 	nodes.todoListUL.innerHTML = '';
+
+	let todos;
+
+	// Get all items from the localStorage if there are any
+	todos = (storage.localStorage.getItem("todos") === null) ? [] :
+		JSON.parse(storage.localStorage.getItem("todos"));
 
 	// Add Todo Item at the end
 	todos.forEach( todo => {
@@ -49,215 +86,139 @@ const renderTodos = function(todos) {
 	displayTodoItemsCount();
 };
 
-// Fetch the Render todos
-const fetchAndRenderTodos = function (APIRoot) {
-	fetch(APIRoot)
-	.then(response => {
-		if(response.ok) {
-			return response.json();
-		}
-	})
-	.then(data => {
-		todos = data;
-		renderTodos(todos);
-	})
-	.catch(err => console.error(err));
-}
-
-// Clear input field and focus on it for new todo
-const clearInput = function () {
-	// Clear input text
-	nodes.addTodoInput.value = '';
-
-	// Focus on input for new todo
-	nodes.addTodoInput.focus();
-}
-
 // Add Todo Item
 const addTodo = function() {
 	// Get the input value
 	const todoText = nodes.addTodoInput.value;
 
-	// Set the new item
+	let todos;
+	
+	// Get all items from the localStorage
+	todos = (storage.localStorage.getItem("todos") === null) ? [] :
+		JSON.parse(storage.localStorage.getItem("todos"));
+
+	// Set the id of the item
+	const id = todos.length ? todos[todos.length-1].id + 1 : 1;
+
 	const newTodo = {
+		"id": id,
 		"title": todoText,
 		"completed": false
 	};
+
+	let index, hasValue;
 	
-	// Create a new POST Request object
-	let postTodos = new Request(APIRoot,
-	{
-		method: 'POST',
-		headers: {
-			"Content-Type": "application/json; charset=UTF-8"
-		},
-		body: JSON.stringify(newTodo)
-	});
+	// Check for todo item with the same title as input value ignoring lowercase and uppercase letters
+	if(todos != null)
+    {	
+        for (let i = 0; i < todos.length; i++) {
+            if(equalsIgnoringCase(todos[i].title, newTodo.title)) {
+                hasValue = true;
+                break;
+            }
+            else {
+                hasValue = false;
+            }
+        }
+    }
 
-	// Add todo when todos array is empty
-	if(todos == "" && newTodo.title != '') {
-		// Send the POST Request object
-		fetch(postTodos)
-		.then(response => {
-			if(!response.ok) {
-				throw Error(response.statusText);
-			}
-
-			return response.json();
-		})
-		.then(data => {
-			// Change local state
-			todos = [...todos, data];
-
-			setTimeOutForAlerts("To do item was added successfully.", "success", 3000);
-
-			// Render todos
-			renderTodos(todos);
-		
-			clearInput();
-		})
-		.catch(err => console.error(err));
-	}
-	else if(todos != "") {
-		todos.forEach( todo => {
-			// Get the index of todo to be edited from todos array
-			let index = todos.findIndex(todo => todo.title === newTodo.title);
-
-			if(newTodo.title == '') {
-				setTimeOutForAlerts("Please enter valid value.", "danger", 3000);
-			}
-			else if(newTodo.title != '' && index == -1) {
-				// Fetch the POST Request object
-				fetch(postTodos)
-				.then(response => {
-					if(!response.ok) {
-						throw Error(response.statusText);
-					}
-
-					return response.json();
-				})
-				.then(data => {
-					// Change local state
-					todos = [...todos, data];
-					
-					setTimeOutForAlerts("To do item was added successfully.", "success", 3000);
-			
-					// Render todos
-					renderTodos(todos);
-
-					clearInput();
-				})
-				.catch(err => console.error(err));
-			}
-			else {
-				setTimeOutForAlerts("There is an item with that value.", "danger", 3000);
-			}
-		});
-	}
-	else {
+	// Validate input value
+	if(newTodo.title == '') {
 		setTimeOutForAlerts("Please enter valid value.", "danger", 3000);
 	}
+	else if(newTodo != '' && hasValue == true) {
+		setTimeOutForAlerts("There is an item with that value.", "danger", 3000);
+	}
+	else {
+		// Add new todo in localStorage
+		saveLocalTodo(newTodo);
+
+		setTimeOutForAlerts("To do item was added successfully.", "success", 3000);
+	}
+	
+	// Render todos
+	renderTodos();
+
+	// Clear input text
+	nodes.addTodoInput.value = '';
+
+	// Focus on input for new todo
+	nodes.addTodoInput.focus();
 };
 
 // Remove Todo Item
 const removeTodo = function(id) {
-	// Create a new DELETE Request object
-	let deleteTodos = new Request(`${APIRoot}/${id}`,
-	{
-		method: 'DELETE',
-		headers: {
-			"Content-Type": "application/json"
-		}
-	});
+	let todos;
+	
+	// Get all items from the localStorage
+	todos = JSON.parse(storage.localStorage.getItem("todos"));
 
-	// Send the DELETE Request object
-	fetch(deleteTodos)
-	.then( response => {
-		if(!response.ok) {
-			throw Error(response.statusText);
-		}
+	// Get the index of todo to be removed from todos key in localStorage
+	let index = todos.findIndex(todo => todo.id === id);
 
-		// Remove from todos array the element with selected id using filter()
-		todos = todos.filter(todo => todo.id != id);
-
+	// Remove from todos array the element with index index
+	if(index >= 0) {
+		removeLocalTodo(index);
 		setTimeOutForAlerts("To do item was deleted successfully.", "success", 3000);
-		
-		// Render todos
-		renderTodos(todos);
-	})
-	.catch(err => console.error(err));
+	}
+
+	// Render todos
+	renderTodos();
 };
 
 // Edit Todo Item
 const editTodo = function (id) {
-	// Get the index of todo to be edited from todos array
+	let todos;
+	
+	// Get all items from the localStorage
+	todos = JSON.parse(storage.localStorage.getItem("todos"));
+
+	// Get the index of todo to be edited from todos key in localStorage
 	let index = todos.findIndex(todo => todo.id === id);
 
+	let todo;
+
+	// Make the todo item editable
 	if(index != -1) {
-		let todo = todos[index];
+		todo = todos[index];
 		const editValue = prompt("Edit the selected item", todo.title);
 		todo.title = editValue;
 
-		// Create a new PUT Request object
-		let editTodo = new Request(`${APIRoot}/${id}`,
-		{
-			method: 'PUT',
-			headers: {
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify({
-				title: `${todo.title}`,
-				completed: todo.completed
-			})
-		});
+		storage.localStorage.setItem("todos", JSON.stringify(todos));
 
-		// Send the PUT Request object
-		fetch(editTodo)
-		.then(response => {
-			if(!response.ok) {
-				throw Error(response.statusText);
-			}
+		setTimeOutForAlerts("To do item was edited successfully.", "success", 3000);
 
-			// Render todos
-			renderTodos(todos);
-		})
-		.catch(err => console.error(err));
+		// Render todos
+		renderTodos();
 	}
 }
 
 // Toggle completed/uncompleted Todo Item
 const toggleComplete = function(id) {
-	// Get todo to be completed/uncompleted from todos array
-	let todo = todos.filter(todo => todo.id === id)[0];
+	let todos;
 	
-	todo.completed = !todo.completed;
+	// Get all items from the localStorage
+	todos = JSON.parse(storage.localStorage.getItem("todos"));
 
-	// Create a new PATCH Request object
-	let completeTodo = new Request(`${APIRoot}/${id}`,
-	{
-		method: 'PATCH',
-		headers: {
-			"Content-Type": "application/json; charset=UTF-8"
-		},
-		body: JSON.stringify({
-			completed: todo.completed
-		})
-	});
+	// Get the index of todo to be completed/uncompleted from todos key in localStorage
+	let index = todos.findIndex(todo => todo.id === id);
 
-	// Send the PATCH Request object
-	fetch(completeTodo)
-	.then(response => {
-		if(!response.ok) {
-			throw Error(response.statusText);
-		}
+	let todo;
+
+	if(index != -1) {
+		todo = todos[index];
+
+		// Make the todo completed/uncompleted
+		todo.completed = !todo.completed;
+
+		storage.localStorage.setItem("todos", JSON.stringify(todos));
 
 		// Render todos
-		renderTodos(todos);
-	})
-	.catch(err => console.error(err));
+		renderTodos();
+	}
 };
 
-window.addEventListener( "DOMContentLoaded", () => { fetchAndRenderTodos(APIRoot) } );
+window.addEventListener( "DOMContentLoaded", event => { renderTodos() } );
 
 // Add Todo Item on button click
 nodes.addTodoBtn.addEventListener("click", addTodo);
@@ -268,7 +229,7 @@ nodes.addTodoInput.addEventListener("keyup", function(e) {
 	}
 });
 
-// Remove, Edit and Complete Todo Item
+// Remove, Edit and Toggle completed/uncompleted Todo Item
 nodes.todoListUL.addEventListener("click", function (e) {
 	// Remove Todo Item
 	if(e.target.classList.contains("fa-trash-alt")){
@@ -277,7 +238,7 @@ nodes.todoListUL.addEventListener("click", function (e) {
 
 		removeTodo(id);
 	}
-	// Remove, Edit and Toggle completed/uncompleted Todo Item
+	// Toggle completed/uncompleted Todo Item
 	else if(e.target.classList.contains("fa-check-square")){
 		const li = e.target.parentElement.parentElement
 		const id = li.dataset.id*1;
@@ -292,6 +253,6 @@ nodes.todoListUL.addEventListener("click", function (e) {
 		editTodo(id);
 	}
 	else {
-		e.preventDefault();
+		e.preventDefault()
 	}
-});
+})
