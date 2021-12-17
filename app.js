@@ -127,7 +127,7 @@ const addTodo = function() {
 				setTimeOutForAlerts("Please enter valid value.", "danger", 3000);
 			}
 			else if(newTodo.title != '' && index == -1) {
-				// Fetch the POST Request object
+				// Send the POST Request object
 				fetch(postTodos)
 				.then(response => {
 					if(!response.ok) {
