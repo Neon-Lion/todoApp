@@ -4,7 +4,7 @@
   "description": "Todo App using TypeScript",
   "main": "app.js",
   "scripts": {
-    "start-live-server": "live-server ./ --port 8888",
+    "start-live-server": "live-server ./dist --port 8888",
     "build": "tsc",
     "start": "npm run build -- -w"
   },
