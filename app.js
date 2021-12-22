@@ -24,6 +24,10 @@ function setTimeOutForAlerts(alertMessage, alertType, seconds) {
         }, seconds);
 }
 
+function equalsIgnoringCase(text, other) {
+    return text.localeCompare(other, undefined, { sensitivity: "base" }) === 0;
+}
+
 // Display the number of todo items
 const displayTodoItemsCount = function() {
 	let count = todos.length || 0;
@@ -94,8 +98,26 @@ const addTodo = function() {
 		body: JSON.stringify(newTodo)
 	});
 
-	// Add todo when todos array is empty
-	if(todos == "" && newTodo.title != '') {
+	let hasValue;
+
+	if(todos != "") {
+		for (let i = 0; i < todos.length; i++) {	
+			if(equalsIgnoringCase(todos[i].title, newTodo.title)) {
+				hasValue = true;
+				break;
+			}
+			else {
+				hasValue = false;
+			}
+		}
+	}
+
+	if(newTodo.title == '') {
+		setTimeOutForAlerts("Please enter valid value.", "danger", 3000);
+
+		clearInput();
+	}
+	else if(newTodo.title != '' && hasValue == false) {
 		// Send the POST Request object
 		fetch(postTodos)
 		.then(response => {
@@ -108,54 +130,20 @@ const addTodo = function() {
 		.then(data => {
 			// Change local state
 			todos = [...todos, data];
-
+			
 			setTimeOutForAlerts("To do item was added successfully.", "success", 3000);
-
+	
 			// Render todos
 			renderTodos(todos);
-		
+
 			clearInput();
 		})
 		.catch(err => console.error(err));
 	}
-	else if(todos != "") {
-		todos.forEach( todo => {
-			// Get the index of todo to be edited from todos array
-			let index = todos.findIndex(todo => todo.title === newTodo.title);
-
-			if(newTodo.title == '') {
-				setTimeOutForAlerts("Please enter valid value.", "danger", 3000);
-			}
-			else if(newTodo.title != '' && index == -1) {
-				// Send the POST Request object
-				fetch(postTodos)
-				.then(response => {
-					if(!response.ok) {
-						throw Error(response.statusText);
-					}
-
-					return response.json();
-				})
-				.then(data => {
-					// Change local state
-					todos = [...todos, data];
-					
-					setTimeOutForAlerts("To do item was added successfully.", "success", 3000);
-			
-					// Render todos
-					renderTodos(todos);
-
-					clearInput();
-				})
-				.catch(err => console.error(err));
-			}
-			else {
-				setTimeOutForAlerts("There is an item with that value.", "danger", 3000);
-			}
-		});
-	}
 	else {
-		setTimeOutForAlerts("Please enter valid value.", "danger", 3000);
+		setTimeOutForAlerts("There is an item with that value.", "danger", 3000);
+
+		clearInput();
 	}
 };
 
@@ -217,6 +205,8 @@ const editTodo = function (id) {
 			if(!response.ok) {
 				throw Error(response.statusText);
 			}
+
+			setTimeOutForAlerts("To do item was edited successfully.", "success", 3000);
 
 			// Render todos
 			renderTodos(todos);
