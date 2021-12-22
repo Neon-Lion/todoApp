@@ -7,7 +7,10 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start-json-server": "json-server --watch db.json",
+    "start-live-server": "live-server ./ --port 8888",
+    "start": "concurrently \"npm run start-json-server\" \"npm run start-live-server\""
   },
   "repository": {
     "type": "git",
@@ -19,5 +22,8 @@
     "url": "https://github.com/Neon-Lion/todoApp/issues"
   },
   "homepage": "https://github.com/Neon-Lion/todoApp#readme",
-  "description": "Todo App using localStorage"
+  "description": "Todo App using localStorage",
+  "dependencies": {
+    "concurrently": "^6.5.1"
+  }
 }
