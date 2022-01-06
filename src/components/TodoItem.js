@@ -9,7 +9,7 @@ class TodoItem extends Component {
           <div className="action-icon edit"><i className="fas fa-pencil-alt"></i></div>
           <div className="action-icon remove"><i className="far fa-trash-alt"></i></div>
       </li>
-    )
+    );
   }
 }
 
