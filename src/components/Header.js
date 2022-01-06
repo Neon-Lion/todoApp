@@ -1,7 +1,9 @@
-import React from "react";
+import React, { Component } from "react";
 
-const Header = () => {
-    return <header>Todo App using React</header>;
+class Header extends Component {
+    render() {
+        return <header>Todo App using React</header>;
+    }
 }
 
 export default Header;
