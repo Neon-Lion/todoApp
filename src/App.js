@@ -6,6 +6,12 @@ import { AddTodo }    from "./components/AddTodo";
 import { TodoList }   from "./components/TodoList";
 import { TodosCount } from "./components/TodosCount";
 
+const todos = [
+  {'id': 1, 'title': 'Learn HTML', 'completed': false},
+  {'id': 2, 'title': 'Learn CSS', 'completed': false},
+  {'id': 3, 'title': 'Learn JavaScript', 'completed': false}
+];
+
 function App() {
   return (
     // <div className="App">
@@ -36,4 +42,4 @@ function App() {
   );
 }
 
-export default App;
+export {App, todos};
