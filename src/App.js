@@ -22,7 +22,9 @@ class App extends Component {
             alertClass: ""
         };
 
-        this.onClickHandler = this.onClickHandler.bind(this);
+        this.addTodoItem = this.addTodoItem.bind(this);
+        this.removeTodoItem = this.removeTodoItem.bind(this);
+
         this.fetchTodos = this.fetchTodos.bind(this);
         this.addAlertType = this.addAlertType.bind(this);
         this.setTimeOutForAlerts = this.setTimeOutForAlerts.bind(this);
@@ -85,10 +87,11 @@ class App extends Component {
                 "todos": data
             })
         })
-        .catch(err => console.warn(err))
+        .catch(err => console.error(err));
     }
 
-    onClickHandler(todoTitle) {
+    // Add Todo Item
+    addTodoItem(todoTitle) {
         let newTodo = {
             "title": todoTitle,
             "completed": false
@@ -124,11 +127,40 @@ class App extends Component {
                 
                 this.setTimeOutForAlerts("To do item was added successfully.", "success", 3000);
             })
+            .catch(err => console.error(err));
         }
         else {
             this.setTimeOutForAlerts("There is an item with that value.", "danger", 3000);
         }
     }
+
+    // Remove Todo Item
+    removeTodoItem(id) {
+        // Create a new DELETE Request object
+        let deleteTodo = new Request(`${this.APIRoot}/${id}`,
+        {
+            method: 'DELETE',
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        // Send the DELETE Request object
+        fetch(deleteTodo)
+        .then( response => {
+            if(!response.ok) {
+                throw Error(response.statusText);
+            }
+
+            // Remove from todos array the element with selected id using filter()
+            this.setState({
+                "todos": this.state.todos.filter(todo => todo.id !== id)
+            })
+
+            this.setTimeOutForAlerts("To do item was deleted successfully.", "success", 3000);
+        })
+        .catch(err => console.error(err));
+    };
 
     render() {
         return (
@@ -153,13 +185,13 @@ class App extends Component {
                 <Header />
                 <main className="todo-app">
                     <AddTodo
-                        addTodo      = {this.onClickHandler}
+                    addTodoItem      = {this.addTodoItem}
                         addAlertType = {this.addAlertType}
                         alertClass   = {this.state.alertClass}
                         alertMessage = {this.state.alertMessage}
                         fetchTodos   = {this.fetchTodos}
                     />
-                    <TodoList todos = {this.state.todos} />
+                    <TodoList todos = {this.state.todos} removeTodoItem = {this.removeTodoItem} />
                     <TodosCount />
                 </main>
             </div>
