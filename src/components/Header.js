@@ -1,9 +1,7 @@
-import React, { Component } from "react";
+import React from "react";
 
-class Header extends Component {
-    render() {
-        return <header>Todo App using React</header>;
-    }
+function Header() {
+    return <header>Todo App using React</header>;
 }
 
 export default Header;
