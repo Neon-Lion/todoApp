@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 
 // function Add(props) {
 //     let inputRef = React.createRef();
@@ -26,19 +26,39 @@ class AddTodo extends Component {
         this.state = {
             "inputValue": ""
         }
+    
+        this.clearInput = this.clearInput.bind(this);
+        this.clickHandler = this.clickHandler.bind(this);
     }
 
-    clickHandler = (props) => {
-        this.props.addTodo(this.state.inputValue)
-        // alert(this.state.inputValue);
+    // Execute the React code when the component is already placed in the DOM
+    componentDidMount(props) {
+        this.props.fetchTodos()
+        this.addInput.focus();
     }
 
-    render() {
+    // Clear input field and focus on it for new todo
+    clearInput() {
+        this.setState({
+           "inputValue": ""
+        })
+    }
+
+    clickHandler(props) {
+        this.props.addTodo(this.state.inputValue);
+        this.clearInput();
+    }
+
+    render(props) {
         return (
             <>
-                <div className="alert feedback centerAlign"></div>
+                <div className={`alert feedback centerAlign ${this.props.alertClass}`}>{this.props.alertMessage}</div>
                 <div className="todo-add">
-                    <input type="text" autoFocus placeholder="Add new todo ..." value={this.state.inputValue} onChange={(e) => this.setState({"inputValue": e.target.value})} />
+                    <input type="text" autoFocus placeholder="Add new todo ..."
+                        ref={(input) => { this.addInput = input; }}
+                        value={this.state.inputValue}
+                        onChange={(e) => this.setState({"inputValue": e.target.value})}
+                    />
                     <button className="add-btn" type="button" onClick={this.clickHandler}>Add</button>
                 </div>
             </>

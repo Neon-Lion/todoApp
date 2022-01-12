@@ -11,14 +11,65 @@ class App extends Component {
     constructor(props) {
         super(props);
 
-        this.APIRoot = "http://localhost:3000/todos";
-
+        this.APIRoot = "http://localhost:3001/todos";
+        
         this.state = {
-            todos: []
+            todos: [],
+            hasValue: false,
+            alertMessage: "",
+            alertType: "",
+            showItem: false,
+            alertClass: ""
         };
 
         this.onClickHandler = this.onClickHandler.bind(this);
         this.fetchTodos = this.fetchTodos.bind(this);
+        this.addAlertType = this.addAlertType.bind(this);
+        this.setTimeOutForAlerts = this.setTimeOutForAlerts.bind(this);
+    }
+
+    addAlertType() {
+        if(this.state.showItem) {
+            // Change local state
+            this.setState({
+                "todos": this.state.todos,
+                "hasValue": this.state.hasValue,
+                "alertMessage": this.state.alertMessage,
+                "alertType": this.state.alertType,
+                "showItem": true,
+                "alertClass": 'showItem alert-' + this.state.alertType
+            })
+        }
+    }
+
+    // setTimeOut for alerts
+    setTimeOutForAlerts(alertMessage, alertType, seconds) {
+        // alert(alertType);
+        
+        // Change local state
+        this.setState({
+            "todos": this.state.todos,
+            "hasValue": this.state.hasValue,
+            "alertMessage": alertMessage,
+            "alertType": alertType,
+            "showItem": true,
+            "alertClass": `showItem alert-${alertType}`
+        })
+
+        this.addAlertType();
+
+        setTimeout(
+            () => {
+                // Change local state
+                this.setState({
+                    "todos": this.state.todos,
+                    "hasValue": this.state.hasValue,
+                    "alertMessage": "",
+                    "alertType": "",
+                    "showItem": false,
+                    "alertClass": ""
+                })
+            }, seconds);
     }
 
     fetchTodos() {
@@ -29,21 +80,54 @@ class App extends Component {
             }
         })
         .then(data => {
-                this.setState({
-                todos: data
+            // Change local state
+            this.setState({
+                "todos": data
             })
         })
         .catch(err => console.warn(err))
     }
 
     onClickHandler(todoTitle) {
-        let todo = {
+        let newTodo = {
             "title": todoTitle,
-            "completed": false,
-            "id": 7
+            "completed": false
         }
+        
+        if(newTodo.title === '') {
+            this.setTimeOutForAlerts("Please enter valid value.", "danger", 3000);
+        }
+        else if(newTodo.title !== '') {
+            // Create a new POST Request object
+            let postTodos = new Request(this.APIRoot,
+            {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json; charset=UTF-8"
+                },
+                body: JSON.stringify(newTodo)
+            });
 
-        this.setState({ "todos": [...this.state.todos, todo] })
+            fetch(postTodos)
+            .then(response => {
+                if(!response.ok) {
+                    throw Error(response.statusText);
+                }
+
+                return response.json();
+            })
+            .then(data => {
+                // Change local state
+                this.setState({
+                    "todos": [...this.state.todos, data]
+                })
+                
+                this.setTimeOutForAlerts("To do item was added successfully.", "success", 3000);
+            })
+        }
+        else {
+            this.setTimeOutForAlerts("There is an item with that value.", "danger", 3000);
+        }
     }
 
     render() {
@@ -64,11 +148,17 @@ class App extends Component {
             //     </a>
             //     </header>
             // </div>
-
+            
             <div className="page">
                 <Header />
                 <main className="todo-app">
-                    <AddTodo addTodo = {this.onClickHandler} />
+                    <AddTodo
+                        addTodo      = {this.onClickHandler}
+                        addAlertType = {this.addAlertType}
+                        alertClass   = {this.state.alertClass}
+                        alertMessage = {this.state.alertMessage}
+                        fetchTodos   = {this.fetchTodos}
+                    />
                     <TodoList todos = {this.state.todos} />
                     <TodosCount />
                 </main>
