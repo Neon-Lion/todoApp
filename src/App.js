@@ -15,7 +15,6 @@ class App extends Component {
         
         this.state = {
             todos: [],
-            hasValue: false,
             alertMessage: "",
             alertType: "",
             showItem: false,
@@ -37,7 +36,6 @@ class App extends Component {
             // Change local state
             this.setState({
                 "todos": this.state.todos,
-                "hasValue": this.state.hasValue,
                 "alertMessage": this.state.alertMessage,
                 "alertType": this.state.alertType,
                 "showItem": true,
@@ -48,12 +46,9 @@ class App extends Component {
 
     // setTimeOut for alerts
     setTimeOutForAlerts(alertMessage, alertType, seconds) {
-        // alert(alertType);
-        
         // Change local state
         this.setState({
             "todos": this.state.todos,
-            "hasValue": this.state.hasValue,
             "alertMessage": alertMessage,
             "alertType": alertType,
             "showItem": true,
@@ -67,7 +62,6 @@ class App extends Component {
                 // Change local state
                 this.setState({
                     "todos": this.state.todos,
-                    "hasValue": this.state.hasValue,
                     "alertMessage": "",
                     "alertType": "",
                     "showItem": false,
@@ -98,11 +92,26 @@ class App extends Component {
             "title": todoTitle,
             "completed": false
         }
-        
+
+        let hasValue = false;
+
+        if(this.state.todos !== "") {
+            for (let i = 0; i < this.state.todos.length; i++) {	
+                if(this.state.todos[i].title.toLocaleLowerCase() === newTodo.title.toLocaleLowerCase()) {
+                    hasValue = true;
+
+                    break;
+                }
+                else {
+                    hasValue = false;
+                }
+            }
+        }
+
         if(newTodo.title === '') {
             this.setTimeOutForAlerts("Please enter valid value.", "danger", 3000);
         }
-        else if(newTodo.title !== '') {
+        else if(newTodo.title !== '' && hasValue === false) {
             // Create a new POST Request object
             let postTodos = new Request(this.APIRoot,
             {
