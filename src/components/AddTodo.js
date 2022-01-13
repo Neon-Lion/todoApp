@@ -28,7 +28,7 @@ class AddTodo extends Component {
         }
     
         this.clearInput = this.clearInput.bind(this);
-        this.addTodo = this.addTodo.bind(this);
+        this.add = this.add.bind(this);
     }
 
     // Execute the React code when the component is already placed in the DOM
@@ -44,8 +44,8 @@ class AddTodo extends Component {
         })
     }
 
-    addTodo(props) {
-        this.props.addTodoItem(this.state.inputValue);
+    add(props) {
+        this.props.addTodo(this.state.inputValue);
         this.clearInput();
     }
 
@@ -59,7 +59,7 @@ class AddTodo extends Component {
                         value={this.state.inputValue}
                         onChange={(e) => this.setState({"inputValue": e.target.value})}
                     />
-                    <button className="add-btn" type="button" onClick={this.addTodo}>Add</button>
+                    <button className="add-btn" type="button" onClick={this.add}>Add</button>
                 </div>
             </>
         );

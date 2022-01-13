@@ -11,7 +11,7 @@ class App extends Component {
     constructor(props) {
         super(props);
 
-        this.APIRoot = "http://localhost:3001/todos";
+        this.APIRoot  = "http://localhost:3001/todos";
         
         this.state = {
             todos: [],
@@ -22,8 +22,10 @@ class App extends Component {
             alertClass: ""
         };
 
-        this.addTodoItem = this.addTodoItem.bind(this);
-        this.removeTodoItem = this.removeTodoItem.bind(this);
+        this.addTodo = this.addTodo.bind(this);
+        this.toggleComplete = this.toggleComplete.bind(this);
+        this.editTodo = this.editTodo.bind(this);
+        this.removeTodo = this.removeTodo.bind(this);
 
         this.fetchTodos = this.fetchTodos.bind(this);
         this.addAlertType = this.addAlertType.bind(this);
@@ -76,9 +78,9 @@ class App extends Component {
 
     fetchTodos() {
         fetch(this.APIRoot)
-        .then(r => {
-            if(r.ok) {
-                return r.json();
+        .then(response => {
+            if(response.ok) {
+                return response.json();
             }
         })
         .then(data => {
@@ -91,7 +93,7 @@ class App extends Component {
     }
 
     // Add Todo Item
-    addTodoItem(todoTitle) {
+    addTodo(todoTitle) {
         let newTodo = {
             "title": todoTitle,
             "completed": false
@@ -110,7 +112,7 @@ class App extends Component {
                 },
                 body: JSON.stringify(newTodo)
             });
-
+        
             fetch(postTodos)
             .then(response => {
                 if(!response.ok) {
@@ -135,7 +137,7 @@ class App extends Component {
     }
 
     // Remove Todo Item
-    removeTodoItem(id) {
+    removeTodo(id) {
         // Create a new DELETE Request object
         let deleteTodo = new Request(`${this.APIRoot}/${id}`,
         {
@@ -158,6 +160,77 @@ class App extends Component {
             })
 
             this.setTimeOutForAlerts("To do item was deleted successfully.", "success", 3000);
+        })
+        .catch(err => console.error(err));
+    };
+
+    // Edit Todo Item
+    editTodo(id) {
+        // Get the index of todo to be edited from todos array
+        let index = this.state.todos.findIndex(todo => todo.id === id);
+
+        if(index !== -1) {
+            let todo = this.state.todos[index];
+            const editValue = prompt("Edit the selected item", todo.title);
+            todo.title = editValue;
+
+            // Create a new PUT Request object
+            let editTodo = new Request(`${this.APIRoot}/${id}`,
+            {
+                method: 'PUT',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    title: `${todo.title}`,
+                    completed: todo.completed
+                })
+            });
+
+            // Send the PUT Request object
+            fetch(editTodo)
+            .then(response => {
+                if(!response.ok) {
+                    throw Error(response.statusText);
+                }
+                else {
+                    this.fetchTodos();
+                }
+
+                this.setTimeOutForAlerts("To do item was edited successfully.", "success", 3000);
+            })
+            .catch(err => console.error(err));
+        }
+    }
+
+    // Toggle completed/uncompleted Todo Item
+    toggleComplete(id) {
+        // Get todo to be completed/uncompleted from todos array
+        let todo = this.state.todos.filter(todo => todo.id === id)[0];
+        
+        todo.completed = !todo.completed;
+
+        // Create a new PATCH Request object
+        let completeTodo = new Request(`${this.APIRoot}/${id}`,
+        {
+            method: 'PATCH',
+            headers: {
+                "Content-Type": "application/json; charset=UTF-8"
+            },
+            body: JSON.stringify({
+                completed: todo.completed
+            })
+        });
+
+        // Send the PATCH Request object
+        fetch(completeTodo)
+        .then(response => {
+            if(!response.ok) {
+                throw Error(response.statusText);
+            }
+            else {
+                this.fetchTodos();
+            }
         })
         .catch(err => console.error(err));
     };
@@ -185,14 +258,14 @@ class App extends Component {
                 <Header />
                 <main className="todo-app">
                     <AddTodo
-                    addTodoItem      = {this.addTodoItem}
+                        addTodo      = {this.addTodo}
                         addAlertType = {this.addAlertType}
                         alertClass   = {this.state.alertClass}
                         alertMessage = {this.state.alertMessage}
                         fetchTodos   = {this.fetchTodos}
                     />
-                    <TodoList todos = {this.state.todos} removeTodoItem = {this.removeTodoItem} />
-                    <TodosCount />
+                    <TodoList todos = {this.state.todos} toggleComplete = {this.toggleComplete} editTodo = {this.editTodo} removeTodo = {this.removeTodo} />
+                    <TodosCount todos = {this.state.todos} />
                 </main>
             </div>
         );

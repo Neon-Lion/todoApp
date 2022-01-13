@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 
 class TodosCount extends Component {
-    render() {
+    render(props) {
         return (
             <>
                 <div className="todos-total">
-                    Total items: <span className="output"></span>
+                    Total items: <span className="output">{this.props.todos.length}</span>
                 </div>
             </>
         );
