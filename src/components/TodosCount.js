@@ -1,10 +1,10 @@
 import React from "react";
 
-const TodosCount = () => {
+function TodosCount({todos}) {
     return (
         <>
             <div className="todos-total">
-                Total items: <span className="output"></span>
+                Total items: <span className="output">{todos.length}</span>
             </div>
         </>
     );

@@ -1,12 +1,24 @@
 import React from "react";
 
-const TodoItem = (props) => {
+function TodoItem({todo, toggleComplete, editTodo, removeTodo}) {
+    function toggle() {
+        toggleComplete(todo.id)
+    }
+
+    function edit() {
+        editTodo(todo.id)
+    }
+
+    function remove() {
+        removeTodo(todo.id);
+    }
+
     return (
-        <li id={props.id}>
-            <span className={props.completed ? 'completed' : ''}>{props.title}</span>
-            <div className="action-icon complete"><i className="far fa-check-square"></i></div>
-            <div className="action-icon edit"><i className="fas fa-pencil-alt"></i></div>
-            <div className="action-icon remove"><i className="far fa-trash-alt"></i></div>
+        <li id={todo.id}>
+            <span className={todo.completed ? 'completed' : ''}>{todo.title}</span>
+            <div className="action-icon remove" onClick={remove}><i className="far fa-trash-alt"></i></div>
+            <div className="action-icon edit" onClick={edit}><i className="fas fa-pencil-alt"></i></div>
+            <div className="action-icon complete" onClick={toggle}><i className={`far ${todo.completed ? 'fa-check-square' : 'fa-square'}`}></i></div>
         </li>
     );
 }

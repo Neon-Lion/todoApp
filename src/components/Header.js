@@ -1,6 +1,6 @@
 import React from "react";
 
-const Header = () => {
+function Header() {
     return <header>Todo App using React</header>;
 }
 
