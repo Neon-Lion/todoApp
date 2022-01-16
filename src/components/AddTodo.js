@@ -58,6 +58,11 @@ class AddTodo extends Component {
                         ref={(input) => { this.addInput = input; }}
                         value={this.state.inputValue}
                         onChange={(e) => this.setState({"inputValue": e.target.value})}
+                        onKeyPress={ e => {
+                            if (e.key === 'Enter') {
+                                this.add(props)
+                            }
+                        }}
                     />
                     <button className="add-btn" type="button" onClick={this.add}>Add</button>
                 </div>

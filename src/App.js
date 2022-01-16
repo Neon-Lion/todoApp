@@ -203,7 +203,14 @@ class App extends Component {
                     throw Error(response.statusText);
                 }
                 else {
-                    this.fetchTodos();
+                    // this.fetchTodos();
+                    let newTodos = this.state.todos.map( todo => 
+                        todo.id === id ? {"title": todo.title, "completed": todo.completed, "id": todo.id} : todo
+                    )
+
+                    this.setState({
+                        "todos": newTodos
+                    })
                 }
 
                 this.setTimeOutForAlerts("To do item was edited successfully.", "success", 3000);
@@ -238,7 +245,13 @@ class App extends Component {
                 throw Error(response.statusText);
             }
             else {
-                this.fetchTodos();
+                let newTodos = this.state.todos.map( todo => 
+                    todo.id === id ? {"title": todo.title, "completed": todo.completed, "id": todo.id} : todo
+                )
+
+                this.setState({
+                    "todos": newTodos
+                })
             }
         })
         .catch(err => console.error(err));
