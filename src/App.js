@@ -21,47 +21,28 @@ class App extends Component {
             alertClass: ""
         };
 
-        this.addTodo = this.addTodo.bind(this);
-        this.toggleComplete = this.toggleComplete.bind(this);
-        this.editTodo = this.editTodo.bind(this);
-        this.removeTodo = this.removeTodo.bind(this);
-
-        this.fetchTodos = this.fetchTodos.bind(this);
-        this.addAlertType = this.addAlertType.bind(this);
         this.setTimeOutForAlerts = this.setTimeOutForAlerts.bind(this);
-    }
-
-    addAlertType() {
-        if(this.state.showItem) {
-            // Change local state
-            this.setState({
-                "todos": this.state.todos,
-                "alertMessage": this.state.alertMessage,
-                "alertType": this.state.alertType,
-                "showItem": true,
-                "alertClass": 'showItem alert-' + this.state.alertType
-            })
-        }
+        this.fetchTodos = this.fetchTodos.bind(this);
+        this.addTodo = this.addTodo.bind(this);
+        this.removeTodo = this.removeTodo.bind(this);
+        this.editTodo = this.editTodo.bind(this);
+        this.toggleComplete = this.toggleComplete.bind(this);
     }
 
     // setTimeOut for alerts
     setTimeOutForAlerts(alertMessage, alertType, seconds) {
         // Change local state
         this.setState({
-            "todos": this.state.todos,
             "alertMessage": alertMessage,
             "alertType": alertType,
             "showItem": true,
             "alertClass": `showItem alert-${alertType}`
         })
 
-        this.addAlertType();
-
         setTimeout(
             () => {
                 // Change local state
                 this.setState({
-                    "todos": this.state.todos,
                     "alertMessage": "",
                     "alertType": "",
                     "showItem": false,
