@@ -1,9 +1,9 @@
-import React, {useContext} from "react";
+import React, { useContext } from "react";
 import { TodosContext } from "../todosContext";
 
 function TodoItem({todo}) {
-    const APIRoot  = "http://localhost:3001/todos";
-    const {todos, setTodos} = useContext(TodosContext);
+    const {APIRoot, todos, setTodos, setTimeOutForAlerts} = useContext(TodosContext);
+    
     // Remove Todo Item
     function removeTodo(id) {
         // Create a new DELETE Request object
@@ -24,9 +24,9 @@ function TodoItem({todo}) {
 
             // Remove from todos array the element with selected id using filter()
             let newTodos = todos.filter(todo => todo.id !== id)
-            setTodos(newTodos)
+            setTodos(newTodos);
 
-            // setTimeOutForAlerts("To do item was deleted successfully.", "success", 3000);
+            setTimeOutForAlerts("To do item was deleted successfully.", "success", 3000);
         })
         .catch(err => console.error(err));
     }
@@ -61,15 +61,14 @@ function TodoItem({todo}) {
                     throw Error(response.statusText);
                 }
                 else {
-                    // this.fetchTodos();
                     let newTodos = todos.map( todo => 
                         todo.id === id ? {...todo, "title": todo.title} : todo
                     )
 
-                    setTodos(newTodos)
+                    setTodos(newTodos);
                 }
 
-                // setTimeOutForAlerts("To do item was edited successfully.", "success", 3000);
+                setTimeOutForAlerts("To do item was edited successfully.", "success", 3000);
             })
             .catch(err => console.error(err));
         }
@@ -79,8 +78,6 @@ function TodoItem({todo}) {
     function toggleComplete(id) {
         // Get todo to be completed/uncompleted from todos array
         let todo = todos.filter(todo => todo.id === id)[0];
-        
-        // todo.completed = !todo.completed;
 
         // Create a new PATCH Request object
         let completeTodo = new Request(`${APIRoot}/${id}`,
@@ -105,7 +102,7 @@ function TodoItem({todo}) {
                     todo.id === id ? {...todo, "completed": !todo.completed} : todo
                 )
 
-                setTodos(newTodos)
+                setTodos(newTodos);
             }
         })
         .catch(err => console.error(err));

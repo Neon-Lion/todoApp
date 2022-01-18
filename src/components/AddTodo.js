@@ -1,11 +1,9 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState } from "react";
 import { TodosContext } from "../todosContext";
 
 function AddTodo(props) {
     const [inputValue, setInputValue] = useState("");
-    const {todos, setTodos} = useContext(TodosContext);
-
-    const APIRoot  = "http://localhost:3001/todos";
+    const {APIRoot, todos, setTodos, alertMessage, alertClass, setTimeOutForAlerts} = useContext(TodosContext);
 
     function addTodo(todoTitle) {
         let newTodo = {
@@ -29,8 +27,7 @@ function AddTodo(props) {
         }
 
         if(newTodo.title === '') {
-            console.log(1);
-            // setTimeOutForAlerts("Please enter valid value.", "danger", 3000);
+            setTimeOutForAlerts("Please enter valid value.", "danger", 3000);
         }
         else if(newTodo.title !== '' && hasValue === false) {
             // Create a new POST Request object
@@ -53,21 +50,21 @@ function AddTodo(props) {
             })
             .then(data => {
                 // Change local state
-                setTodos(data)
+                setTodos([...todos, data]);
+                setInputValue("");
                 
-                // setTimeOutForAlerts("To do item was added successfully.", "success", 3000);
+                setTimeOutForAlerts("To do item was added successfully.", "success", 3000);
             })
             .catch(err => console.error(err));
         }
         else {
-            console.log(1);
-            // setTimeOutForAlerts("There is an item with that value.", "danger", 3000);
+            setTimeOutForAlerts("There is an item with that value.", "danger", 3000);
         }
     }
 
     return (
         <>
-            <div className={`alert feedback centerAlign ${props.alertClass}`}>{props.alertMessage}</div>
+            <div className={`alert feedback centerAlign ${alertClass}`}>{alertMessage}</div>
             <div className="todo-add">
                 <input type="text"
                     autoFocus
@@ -76,8 +73,7 @@ function AddTodo(props) {
                     onChange={e => setInputValue(e.target.value)}
                     onKeyPress={ e => {
                         if (e.key === 'Enter') {
-                            // add(props)
-                            addTodo(inputValue)
+                            addTodo(inputValue);
                         }
                     }}
                 />

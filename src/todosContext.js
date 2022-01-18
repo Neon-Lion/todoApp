@@ -5,9 +5,25 @@ const TodosContext = createContext();
 const TodosContextProvider = (props) => {
     const APIRoot = "http://localhost:3001/todos";
     const [todos, setTodos] = useState([]);
-    
-    // console.dir(TodosContext);
 
+    const [alertMessage, setAlertMessage] = useState("");
+    const [alertClass, setAlertClass] = useState("");
+
+    // setTimeOut for alerts
+    function setTimeOutForAlerts(alertMessage, alertType, seconds) {
+        // Change local state
+        setAlertMessage(alertMessage);
+        setAlertClass('showItem alert-' + alertType);
+
+        setTimeout(
+            () => {
+                // Change local state
+                setAlertMessage("");
+                setAlertClass("");
+            }, seconds);
+    }
+
+    // console.dir(TodosContext);
     function fetchTodos() {
         fetch(APIRoot)
         .then(response => {
@@ -17,7 +33,7 @@ const TodosContextProvider = (props) => {
         })
         .then(data =>
             // Change local state
-            setTodos([...data])
+            setTodos(data)
         )
         .catch(err => console.error(err));
     }
@@ -26,10 +42,10 @@ const TodosContextProvider = (props) => {
         fetchTodos();
     }, []);
 
-    let store = {todos, setTodos}
+    let store = {APIRoot, todos, alertMessage, alertClass, setTodos, setTimeOutForAlerts}
     
     return (
-        <TodosContext.Provider value={store} >
+        <TodosContext.Provider value={store}>
             {props.children}
         </TodosContext.Provider>
     )

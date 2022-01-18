@@ -1,9 +1,9 @@
-import React, {useContext} from "react";
-import { TodoItem } from "./TodoItem";
+import React, { useContext } from "react";
 import { TodosContext } from "../todosContext";
+import { TodoItem } from "./TodoItem";
 
 function TodoList(props) {
-    const {todos} = useContext(TodosContext);
+    let {todos} = useContext(TodosContext);
     
     return (
         <>

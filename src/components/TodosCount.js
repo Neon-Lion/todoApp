@@ -2,7 +2,7 @@ import React, {useContext} from "react";
 import { TodosContext } from "../todosContext";
 
 function TodosCount() {
-    const todos = useContext(TodosContext);
+    const {todos} = useContext(TodosContext);
 
     return (
         <>
