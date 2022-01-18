@@ -1,6 +1,9 @@
-import React from "react";
+import React, {useContext} from "react";
+import { TodosContext } from "../todosContext";
 
-function TodosCount({todos}) {
+function TodosCount() {
+    const todos = useContext(TodosContext);
+
     return (
         <>
             <div className="todos-total">
