@@ -13,5 +13,3 @@ npm install
 ```
 npm run start
 ```
-# Demo
-https://user-images.githubusercontent.com/51274048/147052254-4270d510-fdfb-40b4-afe5-8d56f01ccf76.mp4
