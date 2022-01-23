@@ -43,10 +43,10 @@ const renderTodos = function(todos) {
 	todos.forEach( todo => {
         nodes.todoListUL.innerHTML += `
         <li data-id=${todo.id}>
-            <span class="${todo.completed?'completed':''}">${todo.title}</span>
-            <div class="action-icon complete"><i class="far fa-check-square"></i></div>
-            <div class="action-icon edit"><i class="fas fa-pencil-alt"></i></div>
-            <div class="action-icon remove"><i class="far fa-trash-alt"></i></div>
+			<span class="${todo.completed?'completed':''}">${todo.title}</span>
+			<div class="action-icon remove"><i class="far fa-trash-alt"></i></div>
+			<div class="action-icon edit"><i class="fas fa-pencil-alt"></i></div>
+            <div class="action-icon complete"><i class="far ${todo.completed ? 'fa-check-square' : 'fa-square'}"></i></div>
         </li>`;
 	});
 
@@ -55,10 +55,10 @@ const renderTodos = function(todos) {
 
 // Fetch the Render todos
 const fetchAndRenderTodos = function (APIRoot) {
-	fetch(APIRoot)
+	axios.get(APIRoot)
 	.then(response => {
-		if(response.ok) {
-			return response.json();
+		if(response.status) {
+			return response.data;
 		}
 	})
 	.then(data => {
@@ -87,16 +87,6 @@ const addTodo = function() {
 		"title": todoText,
 		"completed": false
 	};
-	
-	// Create a new POST Request object
-	let postTodos = new Request(APIRoot,
-	{
-		method: 'POST',
-		headers: {
-			"Content-Type": "application/json; charset=UTF-8"
-		},
-		body: JSON.stringify(newTodo)
-	});
 
 	let hasValue;
 
@@ -119,13 +109,13 @@ const addTodo = function() {
 	}
 	else if(newTodo.title != '' && hasValue == false) {
 		// Send the POST Request object
-		fetch(postTodos)
+		axios.post(APIRoot, newTodo)
 		.then(response => {
-			if(!response.ok) {
+			if(!response.status) {
 				throw Error(response.statusText);
 			}
 
-			return response.json();
+			return response.data;
 		})
 		.then(data => {
 			// Change local state
@@ -149,19 +139,10 @@ const addTodo = function() {
 
 // Remove Todo Item
 const removeTodo = function(id) {
-	// Create a new DELETE Request object
-	let deleteTodos = new Request(`${APIRoot}/${id}`,
-	{
-		method: 'DELETE',
-		headers: {
-			"Content-Type": "application/json"
-		}
-	});
-
 	// Send the DELETE Request object
-	fetch(deleteTodos)
+	axios.delete(`${APIRoot}/${id}`)
 	.then( response => {
-		if(!response.ok) {
+		if(!response.status) {
 			throw Error(response.statusText);
 		}
 
@@ -187,22 +168,15 @@ const editTodo = function (id) {
 		todo.title = editValue;
 
 		// Create a new PUT Request object
-		let editTodo = new Request(`${APIRoot}/${id}`,
-		{
-			method: 'PUT',
-			headers: {
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify({
-				title: `${todo.title}`,
-				completed: todo.completed
-			})
-		});
+		const editedTodo = {
+			title: `${todo.title}`,
+			completed: todo.completed
+		};
 
 		// Send the PUT Request object
-		fetch(editTodo)
+		axios.put(`${APIRoot}/${id}`, editedTodo)
 		.then(response => {
-			if(!response.ok) {
+			if(!response.status) {
 				throw Error(response.statusText);
 			}
 
@@ -222,22 +196,12 @@ const toggleComplete = function(id) {
 	
 	todo.completed = !todo.completed;
 
-	// Create a new PATCH Request object
-	let completeTodo = new Request(`${APIRoot}/${id}`,
-	{
-		method: 'PATCH',
-		headers: {
-			"Content-Type": "application/json; charset=UTF-8"
-		},
-		body: JSON.stringify({
-			completed: todo.completed
-		})
-	});
-
 	// Send the PATCH Request object
-	fetch(completeTodo)
+	axios.patch(`${APIRoot}/${id}`, {
+		completed: todo.completed
+	})
 	.then(response => {
-		if(!response.ok) {
+		if(!response.status) {
 			throw Error(response.statusText);
 		}
 
@@ -261,14 +225,14 @@ nodes.addTodoInput.addEventListener("keyup", function(e) {
 // Remove, Edit and Complete Todo Item
 nodes.todoListUL.addEventListener("click", function (e) {
 	// Remove Todo Item
-	if(e.target.classList.contains("fa-trash-alt")){
+	if(e.target.classList.contains("fa-trash-alt")) {
 		const li = e.target.parentElement.parentElement
 		const id = li.dataset.id*1;
 
 		removeTodo(id);
 	}
 	// Remove, Edit and Toggle completed/uncompleted Todo Item
-	else if(e.target.classList.contains("fa-check-square")){
+	else if(e.target.classList.contains("fa-square") || e.target.classList.contains("fa-check-square")) {
 		const li = e.target.parentElement.parentElement
 		const id = li.dataset.id*1;
 

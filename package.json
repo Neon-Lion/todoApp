@@ -21,7 +21,7 @@
     "url": "https://github.com/Neon-Lion/todoApp/issues"
   },
   "homepage": "https://github.com/Neon-Lion/todoApp#readme",
-  "description": "Todo App using Fetch API",
+  "description": "Todo App using Axios",
   "dependencies": {
     "concurrently": "^6.5.1"
   }
