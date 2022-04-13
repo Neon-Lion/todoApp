@@ -1,0 +1,26 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "startNodemon": "nodemon server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Neon-Lion/todoApp.git"
+  },
+  "author": "Ivo Adzhemov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Neon-Lion/todoApp/issues"
+  },
+  "homepage": "https://github.com/Neon-Lion/todoApp#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.3",
+    "mongoose": "^6.2.9"
+  },
+  "devDependencies": {},
+  "description": "Todo App using MERN"
+}
