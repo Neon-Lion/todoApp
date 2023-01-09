@@ -36,7 +36,7 @@
       "last 1 safari version"
     ]
   },
-  "description": "Todo App using MERN",
+  "description": "Todo App using React, Node, Express and MySQL",
   "main": "index.js",
   "author": "Ivo Adzhemov",
   "license": "ISC",

@@ -18,9 +18,8 @@
   "homepage": "https://github.com/Neon-Lion/todoApp#readme",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.17.3",
-    "mongoose": "^6.2.9"
+    "express": "^4.18.2",
+    "mysql2": "^2.3.3"
   },
-  "devDependencies": {},
-  "description": "Todo App using MERN"
+  "description": "Todo App using React, Node, Express and MySQL"
 }
