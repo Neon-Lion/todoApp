@@ -123,14 +123,44 @@ class Todos extends Component {
             if(index !== -1) {
                 todos[index] = { ...todos[index] };
                 const editValue = prompt("Edit the selected item", todos[index].title);
-                todos[index].title = editValue;
-                
-                this.setState({ todos });
-                await updateTodo(currentTodo, {
-                    title: todos[index].title,
-                });
 
-                this.setTimeOutForAlerts("To do item was edited successfully.", "success", 3000);
+                let hasValue = false;
+
+                if(originalTodos !== "") {
+                    for (let i = 0; i < originalTodos.length; i++) {	
+                        if(originalTodos[i].title.toLocaleLowerCase() === editValue.toLocaleLowerCase()) {
+                            hasValue = true;
+
+                            break;
+                        }
+                        else {
+                            hasValue = false;
+                        }
+                    }
+                }
+
+                try {
+                    if(editValue === '') {
+                        this.setTimeOutForAlerts("Please enter valid value.", "danger", 3000);
+                    }
+                    else if(editValue !== '' && hasValue === false) {
+                        todos[index].title = editValue;
+
+                        this.setState({ todos });
+                        await updateTodo(currentTodo, {
+                            title: todos[index].title,
+                        });
+
+                        this.setTimeOutForAlerts("To do item was edited successfully.", "success", 3000);
+                    }
+                    else {
+                        this.setState({ originalTodos, currentTodo: "" });
+                        this.setTimeOutForAlerts("There is an item with that value.", "danger", 3000);
+                    }
+                }
+                catch (error) {
+                    console.log(error);
+                }
             }
         }
         catch (error) {
@@ -148,10 +178,14 @@ class Todos extends Component {
                 todo => todo._id !== currentTodo
             );
 
-            this.setState({ todos });
-            await deleteTodo(currentTodo);
+            const deleteConfirmation = window.confirm("Are you sure you want to delete this todo item?");
 
-            this.setTimeOutForAlerts("To do item was deleted successfully.", "success", 3000);
+            if(deleteConfirmation) {
+                this.setState({ todos });
+                await deleteTodo(currentTodo);
+
+                this.setTimeOutForAlerts("To do item was deleted successfully.", "success", 3000);
+            }
         }
         catch (error) {
             this.setState({ todos: originalTodos });
